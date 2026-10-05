@@ -67,16 +67,17 @@ const ScannerPage = () => {
         body: JSON.stringify(payload),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Analysis failed');
+        throw new Error(data.details || data.error || 'Analysis failed');
       }
 
-      const data = await response.json();
       setAnalysisResult(data);
       setActiveTab('breakdown');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error during analysis:', error);
-      alert('Analysis failed. Please ensure the backend is running.');
+      alert(`Analysis failed: ${error.message}`);
     } finally {
       setIsAnalyzing(false);
     }

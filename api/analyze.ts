@@ -61,11 +61,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { image, text } = req.body;
+    let body = req.body;
+    // Fallback parsing just in case Vercel missed the application/json header
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        return res.status(400).json({ error: 'Invalid JSON body' });
+      }
+    }
+
+    const { image, text } = body || {};
     const apiKey = process.env.GEMINI_API_KEY;
     
     if (!apiKey) {
-      return res.status(500).json({ error: 'GEMINI_API_KEY is not configured in Vercel Environment Variables' });
+      return res.status(500).json({ error: 'Configuration Error', details: 'GEMINI_API_KEY is not configured in Vercel Environment Variables' });
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
@@ -74,13 +84,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let parts: any[] = [];
     
     if (image) {
-      const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
-      parts.push({ inlineData: { data: base64Data, mimeType: 'image/jpeg' } });
+      // Robust base64 extraction
+      const matches = image.match(/^data:(image\/\w+);base64,(.+)$/);
+      let base64Data = image;
+      let mimeType = 'image/jpeg';
+      
+      if (matches && matches.length === 3) {
+        mimeType = matches[1];
+        base64Data = matches[2];
+      } else {
+        base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+      }
+      
+      parts.push({ inlineData: { data: base64Data, mimeType } });
       parts.push({ text: 'Analyze this e-waste item image and identify exactly what it is. Follow the JSON schema strictly.' });
     } else if (text) {
       parts.push({ text: `Analyze this e-waste item: "${text}". Follow the JSON schema strictly.` });
     } else {
-      return res.status(400).json({ error: 'No image or text provided' });
+      return res.status(400).json({ error: 'Bad Request', details: 'No image or text provided' });
     }
 
     const result = await model.generateContent({
@@ -91,7 +112,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     });
 
-    const responseText = result.response.text();
+    let responseText = result.response.text();
+    // Clean up markdown blocks if the model ignored responseMimeType
+    responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
     const parsed = JSON.parse(responseText);
     
     parsed.sample_id = `#PCB-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -99,8 +123,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     parsed.image_url = image;
 
     res.status(200).json(parsed);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error analyzing image:', error);
-    res.status(500).json({ error: 'Failed to analyze item' });
+    res.status(500).json({ 
+      error: 'Failed to analyze item',
+      details: error.message || String(error)
+    });
   }
 }
