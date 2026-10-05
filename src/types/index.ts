@@ -19,6 +19,7 @@ export interface UrbanMiningYield {
 export interface AnalysisResult {
   device_name: string;
   device_subtitle: string;
+  detected_item_description?: string;
   toxicity_level: 'High' | 'Medium' | 'Low';
   toxicity_score: number; // 0-10
   cpcb_category: string;

@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { useApp } from '../context/AppContext';
 import type { Recycler } from '../types';
-import recyclersRaw from '../data/recyclers.json';
 import 'leaflet/dist/leaflet.css';
 
 // Fix Leaflet default icon issues
@@ -13,8 +12,6 @@ L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
-
-const recyclers = recyclersRaw as Recycler[];
 
 const createRecyclerIcon = (isActive: boolean) =>
   L.divIcon({
@@ -38,8 +35,19 @@ export default function MapPage() {
   const { userPincode, userCity } = useApp();
   const [searchLocation, setSearchLocation] = useState(`${userPincode}, ${userCity}, Punjab`);
   const [activeFilters, setActiveFilters] = useState<string[]>(['CPCB Authorized']);
-  const [selectedRecycler, setSelectedRecycler] = useState<Recycler | null>(recyclers[0] || null);
+  const [recyclers, setRecyclers] = useState<Recycler[]>([]);
+  const [selectedRecycler, setSelectedRecycler] = useState<Recycler | null>(null);
   const [pickupBooked, setPickupBooked] = useState(false);
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/recyclers')
+      .then((res) => res.json())
+      .then((data) => {
+        setRecyclers(data);
+        if (data.length > 0) setSelectedRecycler(data[0]);
+      })
+      .catch((err) => console.error('Failed to fetch recyclers:', err));
+  }, []);
 
   const filters = ['CPCB Authorized', 'Battery Dropoff', 'Doorstep Pickup', '< 5 km', '< 10 km'];
 

@@ -74,12 +74,18 @@ export default function BreakdownPage() {
         </h1>
         <div className="flex items-center gap-2 flex-wrap">
           <span className="px-2 py-1 bg-[#222a3d] text-[#81c995] rounded-full text-xs font-medium border border-[#2c3751]">
-            ITEW1 (IT & Telecom Equipment)
+            {analysisResult.cpcb_category || 'ITEW1 (IT & Telecom Equipment)'}
           </span>
           <span className="text-xs text-slate-500">
-            {new Date().toLocaleDateString('en-US', { hour: '2-digit', minute: '2-digit' })}
+            {analysisResult.scanned_at || new Date().toLocaleDateString('en-US', { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
+        {analysisResult.detected_item_description && (
+          <p className="mt-3 text-sm text-slate-300 bg-slate-800/50 p-3 rounded-lg border border-slate-700/50 leading-relaxed">
+            <span className="font-semibold text-primary block mb-1">AI Detection:</span>
+            {analysisResult.detected_item_description}
+          </p>
+        )}
       </div>
 
       {/* 2. Microscopic PCB Inspection Image */}
