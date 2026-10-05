@@ -92,6 +92,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Priority list of vision-capable models
     const preferredModels = [
+      'gemini-flash-latest',
+      'gemini-3.8-flash',
+      'gemini-3.5-flash',
+      'gemini-2.5-flash',
+      'gemini-pro-latest',
+      'gemini-2.5-pro',
       'gemini-1.5-flash', 
       'gemini-1.5-flash-latest', 
       'gemini-1.5-pro', 
