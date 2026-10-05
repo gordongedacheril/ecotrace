@@ -106,74 +106,86 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       'gemini-1.0-pro-vision-latest'
     ];
     
-    let selectedModel = '';
-    for (const pm of preferredModels) {
-      if (availableModels.includes(pm)) {
-        selectedModel = pm;
-        break;
-      }
-    }
-
-    if (!selectedModel) {
+    const candidateModels = preferredModels.filter(pm => availableModels.includes(pm));
+    
+    if (candidateModels.length === 0) {
       throw new Error("No compatible vision models found for this API key. Available models: " + availableModels.join(', '));
     }
 
-    const isLegacyVision = selectedModel.includes('pro-vision');
     const genAI = new GoogleGenerativeAI(apiKey);
-    
-    const modelOptions: any = { model: selectedModel };
-    // Legacy models don't support systemInstruction
-    if (!isLegacyVision) {
-      modelOptions.systemInstruction = SYSTEM_PROMPT;
-    }
-    const model = genAI.getGenerativeModel(modelOptions);
-    
-    let parts: any[] = [];
-    
-    if (image) {
-      // Robust base64 extraction
-      const matches = image.match(/^data:(image\/\w+);base64,(.+)$/);
-      let base64Data = image;
-      let mimeType = 'image/jpeg';
-      
-      if (matches && matches.length === 3) {
-        mimeType = matches[1];
-        base64Data = matches[2];
-      } else {
-        base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+    let parsed: any = null;
+    let lastError: any = null;
+    let finalModelUsed = '';
+
+    for (const selectedModel of candidateModels) {
+      try {
+        finalModelUsed = selectedModel;
+        const isLegacyVision = selectedModel.includes('pro-vision');
+        
+        const modelOptions: any = { model: selectedModel };
+        // Legacy models don't support systemInstruction
+        if (!isLegacyVision) {
+          modelOptions.systemInstruction = SYSTEM_PROMPT;
+        }
+        const model = genAI.getGenerativeModel(modelOptions);
+        
+        let parts: any[] = [];
+        
+        if (image) {
+          // Robust base64 extraction
+          const matches = image.match(/^data:(image\/\w+);base64,(.+)$/);
+          let base64Data = image;
+          let mimeType = 'image/jpeg';
+          
+          if (matches && matches.length === 3) {
+            mimeType = matches[1];
+            base64Data = matches[2];
+          } else {
+            base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+          }
+          
+          const promptText = isLegacyVision 
+            ? `${SYSTEM_PROMPT}\n\nAnalyze this e-waste item image and identify exactly what it is. Follow the JSON schema strictly.`
+            : 'Analyze this e-waste item image and identify exactly what it is. Follow the JSON schema strictly.';
+
+          parts.push({ inlineData: { data: base64Data, mimeType } });
+          parts.push({ text: promptText });
+        } else if (text) {
+          const promptText = isLegacyVision 
+            ? `${SYSTEM_PROMPT}\n\nAnalyze this e-waste item: "${text}". Follow the JSON schema strictly.`
+            : `Analyze this e-waste item: "${text}". Follow the JSON schema strictly.`;
+          parts.push({ text: promptText });
+        } else {
+          return res.status(400).json({ error: 'Bad Request', details: 'No image or text provided' });
+        }
+
+        const generationConfig: any = { temperature: 0.2 };
+        // Legacy models don't support responseMimeType
+        if (!isLegacyVision) {
+          generationConfig.responseMimeType = 'application/json';
+        }
+
+        const result = await model.generateContent({
+          contents: [{ role: 'user', parts }],
+          generationConfig
+        });
+
+        let responseText = result.response.text();
+        // Clean up markdown blocks if the model ignored responseMimeType
+        responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+        parsed = JSON.parse(responseText);
+        break; // Success! Break out of the fallback loop.
+      } catch (err: any) {
+        console.warn(`Model ${selectedModel} failed:`, err.message);
+        lastError = err;
+        // Continue to the next fallback model in candidateModels
       }
-      
-      const promptText = isLegacyVision 
-        ? `${SYSTEM_PROMPT}\n\nAnalyze this e-waste item image and identify exactly what it is. Follow the JSON schema strictly.`
-        : 'Analyze this e-waste item image and identify exactly what it is. Follow the JSON schema strictly.';
-
-      parts.push({ inlineData: { data: base64Data, mimeType } });
-      parts.push({ text: promptText });
-    } else if (text) {
-      const promptText = isLegacyVision 
-        ? `${SYSTEM_PROMPT}\n\nAnalyze this e-waste item: "${text}". Follow the JSON schema strictly.`
-        : `Analyze this e-waste item: "${text}". Follow the JSON schema strictly.`;
-      parts.push({ text: promptText });
-    } else {
-      return res.status(400).json({ error: 'Bad Request', details: 'No image or text provided' });
     }
 
-    const generationConfig: any = { temperature: 0.2 };
-    // Legacy models don't support responseMimeType
-    if (!isLegacyVision) {
-      generationConfig.responseMimeType = 'application/json';
+    if (!parsed) {
+      throw new Error(`All available models failed. Last error from ${finalModelUsed}: ${lastError?.message || 'Unknown error'}`);
     }
-
-    const result = await model.generateContent({
-      contents: [{ role: 'user', parts }],
-      generationConfig
-    });
-
-    let responseText = result.response.text();
-    // Clean up markdown blocks if the model ignored responseMimeType
-    responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-
-    const parsed = JSON.parse(responseText);
     
     parsed.sample_id = `#PCB-${Math.floor(1000 + Math.random() * 9000)}`;
     parsed.scanned_at = `Today, ${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
