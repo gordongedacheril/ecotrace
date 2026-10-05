@@ -79,7 +79,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash', systemInstruction: SYSTEM_PROMPT });
+    // Use the -latest suffix which prevents 404s on certain API keys/regions
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest', systemInstruction: SYSTEM_PROMPT });
     
     let parts: any[] = [];
     
