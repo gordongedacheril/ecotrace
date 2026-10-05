@@ -8,8 +8,20 @@ import BreakdownPage from './pages/BreakdownPage';
 import MapPage from './pages/MapPage';
 import ProfilePage from './pages/ProfilePage';
 
+import PublicPassPage from './pages/PublicPassPage';
+
 function AppContent() {
   const { activeTab, isAnalyzing } = useApp();
+
+  const path = window.location.pathname;
+  if (path.startsWith('/pass/')) {
+    const passId = path.split('/')[2];
+    return (
+      <div className="dark min-h-screen bg-surface text-on-surface font-['Plus_Jakarta_Sans'] antialiased pt-8">
+        <PublicPassPage passId={passId} />
+      </div>
+    );
+  }
 
   const renderPage = () => {
     switch (activeTab) {

@@ -95,11 +95,13 @@ export interface Badge {
 }
 
 export interface HandoverItem {
+  id: string;
   device_name: string;
   recycler: string;
   weight_kg: string;
   date: string;
   epr_points: number;
+  icon: string;
 }
 
 export type AppTab = 'scan' | 'map' | 'breakdown' | 'profile';

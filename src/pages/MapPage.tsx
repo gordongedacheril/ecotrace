@@ -29,24 +29,73 @@ const userIcon = L.divIcon({
   iconAnchor: [8, 8],
 });
 
-const USER_LOCATION: [number, number] = [30.9010, 75.8573];
+const generateDummyRecyclers = (baseLat: number, baseLng: number): Recycler[] => {
+  const names = ["Eco-Dismantle Hub", "GreenTech Recoveries", "Urban Mine Corp", "Apex E-Waste Solutions", "Sustainable Circuits Ltd", "Re-Volt Battery Disposal", "TechScrap", "ZeroWaste E-Recycling"];
+  
+  return names.map((name, i) => {
+    const latOffset = (Math.random() - 0.5) * 0.15;
+    const lngOffset = (Math.random() - 0.5) * 0.15;
+    const lat = baseLat + latOffset;
+    const lng = baseLng + lngOffset;
+    const distance_km = parseFloat((Math.sqrt(latOffset*latOffset + lngOffset*lngOffset) * 111).toFixed(1));
+    
+    return {
+      id: `rec-${i}`,
+      name,
+      cpcb_authorization: `CPCB/HW/E-Waste/2026/${Math.floor(1000 + Math.random() * 9000)}`,
+      address: `Industrial Sector ${Math.floor(1 + Math.random() * 100)}`,
+      city: "Nearby",
+      state: "Local",
+      pincode: "XXXXXX",
+      lat,
+      lng,
+      distance_km,
+      phone: "+91 1800-EWASTE",
+      rating: parseFloat((4.0 + Math.random()).toFixed(1)),
+      tons_recycled: Math.floor(100 + Math.random() * 2000),
+      certifications: ["CPCB Authorized", "ISO 14001"],
+      accepted_types: ["Li-ion", "PCBs", "CRT"],
+      facility_hours: "9:00 AM - 6:30 PM",
+      doorstep_pickup: Math.random() > 0.3,
+      cpcb_grade: Math.random() > 0.5 ? "A+" : "A",
+      processing_capacity: ["High Capacity", "Medium Capacity"][Math.floor(Math.random() * 2)],
+      wait_time: ["No wait time", "Minimal wait", "Busy"][Math.floor(Math.random() * 3)]
+    };
+  }).sort((a, b) => a.distance_km - b.distance_km);
+};
 
 export default function MapPage() {
-  const { userPincode, userCity } = useApp();
+  const { userPincode, userCity, addHandover, analysisResult, setActiveTab } = useApp();
   const [searchLocation, setSearchLocation] = useState(`${userPincode}, ${userCity}, Punjab`);
   const [activeFilters, setActiveFilters] = useState<string[]>(['CPCB Authorized']);
+  const [userLocation, setUserLocation] = useState<[number, number]>([30.9010, 75.8573]);
   const [recyclers, setRecyclers] = useState<Recycler[]>([]);
   const [selectedRecycler, setSelectedRecycler] = useState<Recycler | null>(null);
   const [pickupBooked, setPickupBooked] = useState(false);
 
   useEffect(() => {
-    fetch('/api/recyclers')
-      .then((res) => res.json())
-      .then((data) => {
-        setRecyclers(data);
-        if (data.length > 0) setSelectedRecycler(data[0]);
-      })
-      .catch((err) => console.error('Failed to fetch recyclers:', err));
+    // Try to get actual user location, fallback to Ludhiana
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const loc: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+          setUserLocation(loc);
+          const localRecyclers = generateDummyRecyclers(loc[0], loc[1]);
+          setRecyclers(localRecyclers);
+          setSelectedRecycler(localRecyclers[0]);
+        },
+        (err) => {
+          console.warn('Geolocation blocked/failed, using default.', err);
+          const localRecyclers = generateDummyRecyclers(userLocation[0], userLocation[1]);
+          setRecyclers(localRecyclers);
+          setSelectedRecycler(localRecyclers[0]);
+        }
+      );
+    } else {
+      const localRecyclers = generateDummyRecyclers(userLocation[0], userLocation[1]);
+      setRecyclers(localRecyclers);
+      setSelectedRecycler(localRecyclers[0]);
+    }
   }, []);
 
   const filters = ['CPCB Authorized', 'Battery Dropoff', 'Doorstep Pickup', '< 5 km', '< 10 km'];
@@ -65,8 +114,26 @@ export default function MapPage() {
   });
 
   const handleBookPickup = () => {
+    if (!selectedRecycler) return;
+    
     setPickupBooked(true);
-    setTimeout(() => setPickupBooked(false), 3000);
+    
+    // Add to handovers
+    const newItem = {
+      id: Math.random().toString(36).substr(2, 9),
+      device_name: analysisResult?.device_name || 'Discarded E-Waste Item',
+      recycler: selectedRecycler.name,
+      weight_kg: '2.5', // Default estimate
+      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      epr_points: Math.floor(Math.random() * 100) + 50,
+      icon: 'device_unknown'
+    };
+    
+    setTimeout(() => {
+      setPickupBooked(false);
+      addHandover(newItem);
+      setActiveTab('profile');
+    }, 1500);
   };
 
   const getDirections = () => {
@@ -119,17 +186,19 @@ export default function MapPage() {
       {/* Map Area */}
       <div className="relative w-full mx-4 mt-3" style={{ width: 'calc(100% - 2rem)', height: '320px', borderRadius: '12px', overflow: 'hidden' }}>
         <MapContainer
-          center={USER_LOCATION}
-          zoom={13}
+          key={`${userLocation[0]}-${userLocation[1]}`} // Forces map to re-render when location updates
+          center={userLocation}
+          zoom={12}
           zoomControl={false}
           style={{ width: '100%', height: '100%' }}
         >
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            className="dark-map-tiles"
           />
 
-          <Marker position={USER_LOCATION} icon={userIcon}>
+          <Marker position={userLocation} icon={userIcon}>
             <Popup>
               <div className="text-slate-900 font-semibold text-sm">You are here</div>
             </Popup>

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { AnalysisResult, AppTab } from '../types';
+import type { AnalysisResult, AppTab, HandoverItem } from '../types';
 
 interface AppContextType {
   activeTab: AppTab;
@@ -15,6 +15,8 @@ interface AppContextType {
   setUserCity: (city: string) => void;
   analysisImage: string | null;
   setAnalysisImage: (img: string | null) => void;
+  handovers: HandoverItem[];
+  addHandover: (item: HandoverItem) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -26,6 +28,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [userPincode, setUserPincode] = useState('141001');
   const [userCity, setUserCity] = useState('Ludhiana');
   const [analysisImage, setAnalysisImage] = useState<string | null>(null);
+  const [handovers, setHandovers] = useState<HandoverItem[]>([]);
+
+  const addHandover = (item: HandoverItem) => {
+    setHandovers((prev) => [item, ...prev]);
+  };
 
   return (
     <AppContext.Provider
@@ -42,6 +49,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setUserCity,
         analysisImage,
         setAnalysisImage,
+        handovers,
+        addHandover,
       }}
     >
       {children}

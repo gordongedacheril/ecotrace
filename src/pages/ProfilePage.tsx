@@ -1,38 +1,14 @@
 
+import { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
+import { useApp } from '../context/AppContext';
 
 export default function ProfilePage() {
-  const handovers = [
-    {
-      id: 1,
-      device_name: 'Dell Laptop Motherboard',
-      recycler: 'Greenex Recyclers • Ind Area A',
-      weight_kg: '3.2',
-      epr_points: 45,
-      date: '24 Feb 2024',
-      icon: 'memory'
-    },
-    {
-      id: 2,
-      device_name: 'Li-ion Battery Pack 48V',
-      recycler: 'Attero Hub • Ludhiana Focal Pt',
-      weight_kg: '1.4',
-      epr_points: 30,
-      date: '13 Mar 2024',
-      icon: 'battery_charging_full'
-    },
-    {
-      id: 3,
-      device_name: 'CRT Monitor Unit',
-      recycler: 'EcoBin Hub • Model Town Point',
-      weight_kg: '14.5',
-      epr_points: 43,
-      date: '08 Jan 2024',
-      icon: 'tv'
-    }
-  ];
-
-  const profileUrl = "https://ecotrace.ai/profile/aarav-sharma";
+  const { handovers } = useApp();
+  
+  // Calculate unique pass ID once
+  const [passId] = useState("EPR-2026-LDH-" + Math.floor(1000 + Math.random() * 9000));
+  const profileUrl = window.location.origin + "/pass/" + passId;
 
   return (
     <div className="flex flex-col w-full px-4 pb-8">
@@ -133,7 +109,7 @@ export default function ProfilePage() {
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">SERIAL PASS HASH</span>
-              <span className="text-[16px] font-mono font-bold text-on-surface tracking-tight truncate">#EPR-2025-LDH-0941</span>
+              <span className="text-[16px] font-mono font-bold text-on-surface tracking-tight truncate">#{passId}</span>
 
             </div>
           </div>
@@ -142,19 +118,18 @@ export default function ProfilePage() {
             <div className="text-on-surface-variant">Authorized Recycler:</div>
             <div className="text-on-surface font-medium text-right">Attero Recycling Pvt Ltd</div>
             <div className="text-on-surface-variant">Issuance Timestamp:</div>
-            <div className="text-on-surface font-medium text-right">12 Mar 2025, 03:15 PM</div>
+            <div className="text-on-surface font-medium text-right">Today</div>
             <div className="text-on-surface-variant">Standard Protocol:</div>
             <div className="text-primary font-medium text-right underline decoration-primary/30 underline-offset-2">MoEFCC Schedule II</div>
           </div>
 
           <div className="flex gap-2">
-            <button className="flex-1 bg-surface-container hover:bg-surface-bright text-on-surface border border-outline-variant/30 py-2.5 rounded-lg flex items-center justify-center gap-1.5 text-[14px] font-semibold transition-colors">
+            <button 
+              onClick={() => { navigator.clipboard.writeText(profileUrl); alert('Public link copied!'); }}
+              className="w-full bg-primary hover:bg-primary-container text-on-primary py-2.5 rounded-lg flex items-center justify-center gap-1.5 text-[14px] font-semibold shadow-[0_2px_10px_rgba(16,185,129,0.2)] transition-colors"
+            >
               <span className="material-symbols-outlined text-[18px]">share</span>
-              Share Pass
-            </button>
-            <button className="flex-1 bg-primary hover:bg-primary-container text-on-primary py-2.5 rounded-lg flex items-center justify-center gap-1.5 text-[14px] font-semibold shadow-[0_2px_10px_rgba(16,185,129,0.2)] transition-colors">
-              <span className="material-symbols-outlined text-[18px]">account_balance_wallet</span>
-              Save to Wallet
+              Copy Public Link
             </button>
           </div>
         </div>
@@ -167,11 +142,17 @@ export default function ProfilePage() {
             <span className="material-symbols-outlined text-primary text-[18px]">history</span>
             <h2 className="text-[16px] font-semibold text-on-surface">Verified Handover History</h2>
           </div>
-          <span className="text-[12px] text-primary font-medium">18 Disposals Audited</span>
+          <span className="text-[12px] text-primary font-medium">{handovers.length} Disposals Audited</span>
         </div>
 
         <div className="flex flex-col gap-3">
-          {handovers.map((item) => (
+          {handovers.length === 0 ? (
+            <div className="bg-surface-container rounded-xl p-6 text-center text-[14px] text-on-surface-variant flex flex-col items-center justify-center gap-2">
+              <span className="material-symbols-outlined text-[32px] text-outline">inbox</span>
+              No handovers yet. Scan an item and book a pickup to see your history!
+            </div>
+          ) : (
+            handovers.map((item) => (
             <div key={item.id} className="bg-surface-container rounded-xl p-3 flex flex-col shadow-sm">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -198,7 +179,7 @@ export default function ProfilePage() {
                 </button>
               </div>
             </div>
-          ))}
+          )))}
         </div>
       </div>
 
