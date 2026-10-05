@@ -35,7 +35,7 @@ export interface AnalysisResult {
   solvent_percentage: number;
   is_consumer_item?: boolean;
   brand_model?: string;
-  estimated_resale_value_inr?: number;
+  estimated_resale_value_range?: string;
 }
 
 export interface Recycler {

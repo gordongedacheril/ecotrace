@@ -208,7 +208,7 @@ export default function BreakdownPage() {
       </div>
 
       {/* Consumer Resale Value Card (Conditional) */}
-      {analysisResult.is_consumer_item && analysisResult.brand_model && analysisResult.estimated_resale_value_inr && (
+      {analysisResult.is_consumer_item && analysisResult.brand_model && analysisResult.estimated_resale_value_range && (
         <div className="px-4 mt-4">
           <div className="bg-gradient-to-r from-[#0a243a] to-[#0f141f] border border-[#1d4a77] rounded-2xl p-4 flex items-center justify-between">
             <div className="flex flex-col">
@@ -216,12 +216,12 @@ export default function BreakdownPage() {
                 <span className="material-symbols-outlined text-[#66b3ff] text-sm">devices</span>
                 <span className="text-[10px] text-[#66b3ff] font-medium uppercase tracking-wider block">Consumer Device Identified</span>
               </div>
-              <h3 className="text-base font-bold text-white truncate max-w-[200px]">{analysisResult.brand_model}</h3>
+              <h3 className="text-base font-bold text-white truncate max-w-[180px]">{analysisResult.brand_model}</h3>
               <span className="text-[11px] text-slate-400 mt-0.5">High secondhand market demand.</span>
             </div>
-            <div className="flex flex-col items-end pl-2 border-l border-[#1d4a77]">
-              <span className="text-[10px] text-slate-400 font-medium mb-0.5 uppercase tracking-wider">Est. Resale</span>
-              <span className="text-lg font-black text-[#66b3ff]">₹{analysisResult.estimated_resale_value_inr.toLocaleString('en-IN')}</span>
+            <div className="flex flex-col items-end pl-2 border-l border-[#1d4a77] shrink-0">
+              <span className="text-[10px] text-slate-400 font-medium mb-0.5 uppercase tracking-wider">Est. Resale Range</span>
+              <span className="text-sm font-black text-[#66b3ff] max-w-[120px] text-right truncate">{analysisResult.estimated_resale_value_range}</span>
             </div>
           </div>
         </div>

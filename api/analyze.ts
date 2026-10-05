@@ -38,11 +38,11 @@ Your response must strictly match this schema:
   "bfr_percentage": number,
   "solvent_percentage": number,
   "is_consumer_item": "boolean - true if the item is a complete sold consumer product (e.g. whole laptop, phone), false if component/scrap",
-  "brand_model": "string - specific brand and model if identifiable, otherwise null",
-  "estimated_resale_value_inr": "number - estimated secondhand resale value in INR if it's an identifiable consumer item, otherwise null"
+  "brand_model": "string - brand and model (can be general like 'Lenovo Laptop' if exact model is unknown), otherwise null",
+  "estimated_resale_value_range": "string - estimated secondhand resale value range (e.g. '₹5,000 - ₹12,000') if it's a consumer item, otherwise null"
 }
 
-Always include at least Lead, Mercury, Cadmium, and BFRs when applicable. If it is a whole consumer device with a recognized brand/model, provide a realistic estimated resale value.`;
+Always include at least Lead, Mercury, Cadmium, and BFRs when applicable. If it is a whole consumer device (like a laptop or phone), provide a realistic estimated resale value range in INR, even if you can only identify the brand and not the exact model.`;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Setup CORS if needed for local testing outside Vercel Dev
