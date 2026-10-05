@@ -347,13 +347,7 @@ export default function BreakdownPage() {
         </div>
       </div>
 
-      {/* 6. Compliance Note */}
-      <div className="px-4 mt-6">
-        <div className="flex items-center gap-2 text-slate-400 text-xs px-2">
-          <span className="material-symbols-outlined text-[#81c995] text-sm flex-shrink-0">verified</span>
-          <p>CPCB Registered E-Waste Rules (2022) compliant processing pathway verified.</p>
-        </div>
-      </div>
+
 
       {/* 7. Primary Actions */}
       <div className="px-4 mt-8 space-y-3 pb-8">

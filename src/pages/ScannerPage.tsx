@@ -7,9 +7,16 @@ const ScannerPage = () => {
   const { setActiveTab, setIsAnalyzing, setAnalysisResult, setAnalysisImage } = useApp();
   const [searchText, setSearchText] = useState('');
   const [isCameraActive, setIsCameraActive] = useState(true);
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const webcamRef = useRef<Webcam>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleUserMediaError = (err: string | DOMException) => {
+    console.error('Camera permission error:', err);
+    setCameraError('Camera access denied or unavailable. Please allow permissions in your browser settings or use file upload.');
+    setIsCameraActive(false);
+  };
 
   const handleCapture = useCallback(() => {
     if (webcamRef.current) {
@@ -18,8 +25,10 @@ const ScannerPage = () => {
         setPreviewImage(imageSrc);
         processAnalysis({ image: imageSrc });
       }
+    } else if (cameraError || !isCameraActive) {
+      fileInputRef.current?.click();
     }
-  }, [webcamRef]);
+  }, [webcamRef, cameraError, isCameraActive]);
 
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -46,7 +55,7 @@ const ScannerPage = () => {
     if (input.image) setAnalysisImage(input.image);
     
     try {
-      const endpoint = 'http://localhost:5000/api/analyze';
+      const endpoint = '/api/analyze';
       
       const payload: any = {};
       if (input.image) payload.image = input.image;
@@ -81,10 +90,7 @@ const ScannerPage = () => {
           <span className="w-2 h-2 rounded-full bg-primary animate-ping shrink-0" />
           <span className="text-[12px] font-semibold text-primary truncate">Hello, Circular Guardian 🌿</span>
         </div>
-        <div className="flex items-center gap-1 bg-surface-container-high px-2 py-1 rounded-full shadow-sm shrink-0">
-          <span className="material-symbols-outlined text-[13px] text-secondary">verified</span>
-          <span className="text-[10px] font-bold text-on-surface-variant">CPCB Rules 2022</span>
-        </div>
+
       </div>
 
       {/* Scanner Card */}
@@ -104,23 +110,41 @@ const ScannerPage = () => {
             
             {previewImage ? (
               <img src={previewImage} alt="Preview" className="w-full h-full object-cover" />
+            ) : cameraError ? (
+              <div className="text-error flex flex-col items-center justify-center p-6 text-center bg-surface-container/50 h-full w-full">
+                <span className="material-symbols-outlined text-4xl mb-2 text-error">videocam_off</span>
+                <span className="text-sm font-medium mb-3">{cameraError}</span>
+                <button 
+                  onClick={() => { setCameraError(null); setIsCameraActive(true); }}
+                  className="px-4 py-2 bg-surface-container-high rounded-full text-xs font-semibold text-on-surface border border-outline-variant/30 active:scale-95 transition-transform"
+                >
+                  Retry Camera
+                </button>
+              </div>
             ) : isCameraActive ? (
               <Webcam
                 audio={false}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
                 videoConstraints={{ facingMode: "environment" }}
+                onUserMediaError={handleUserMediaError}
                 className="w-full h-full object-cover"
               />
             ) : (
               <div className="text-on-surface-variant flex flex-col items-center">
                 <span className="material-symbols-outlined text-4xl mb-2">no_photography</span>
                 <span className="text-sm">Camera inactive</span>
+                <button 
+                  onClick={() => setIsCameraActive(true)}
+                  className="mt-3 px-4 py-2 bg-surface-container-high rounded-full text-xs font-semibold text-on-surface border border-outline-variant/30 active:scale-95 transition-transform"
+                >
+                  Turn On Camera
+                </button>
               </div>
             )}
 
-            {/* Overlays (only show when camera is active and no preview) */}
-            {!previewImage && isCameraActive && (
+            {/* Overlays (only show when camera is active and no preview/error) */}
+            {!previewImage && isCameraActive && !cameraError && (
               <>
                 <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-primary rounded-tl-sm pointer-events-none drop-shadow-[0_0_8px_rgba(78,222,163,0.6)]" />
                 <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-primary rounded-tr-sm pointer-events-none drop-shadow-[0_0_8px_rgba(78,222,163,0.6)]" />

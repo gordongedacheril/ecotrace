@@ -40,7 +40,7 @@ export default function MapPage() {
   const [pickupBooked, setPickupBooked] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/recyclers')
+    fetch('/api/recyclers')
       .then((res) => res.json())
       .then((data) => {
         setRecyclers(data);
@@ -185,22 +185,6 @@ export default function MapPage() {
             </div>
           </div>
 
-          {/* Certifications */}
-          <div className="flex flex-wrap gap-1.5 mb-3">
-            <div className="flex items-center gap-1 text-[10px] font-bold px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded-md">
-              <span className="material-symbols-outlined text-[12px]">workspace_premium</span>
-              {selectedRecycler.cpcb_grade} Authorized
-            </div>
-            {selectedRecycler.certifications.map((cert) => (
-              <div
-                key={cert}
-                className="flex items-center gap-1 text-[10px] font-bold px-2 py-1 bg-surface-container-high text-on-surface-variant border border-outline-variant/20 rounded-md"
-              >
-                <span className="material-symbols-outlined text-[12px]">verified</span>
-                {cert}
-              </div>
-            ))}
-          </div>
 
           {/* Facility Details */}
           <div className="grid grid-cols-2 gap-2 mb-4">

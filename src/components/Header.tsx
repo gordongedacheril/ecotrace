@@ -30,10 +30,7 @@ export default function Header() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-surface-container-high px-2 py-1 rounded-full shadow-sm">
-            <span className="material-symbols-outlined text-[13px] text-secondary">verified</span>
-            <span className="text-[10px] font-bold text-on-surface-variant">CPCB 2022</span>
-          </div>
+
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
             <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
           </div>

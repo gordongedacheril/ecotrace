@@ -47,9 +47,7 @@ export default function ProfilePage() {
           </div>
         </div>
         <div className="flex flex-col">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded-sm">Citizen Circular Champion</span>
-          </div>
+
           <h1 className="text-[22px] font-semibold text-on-surface leading-tight mt-1">Aarav Sharma</h1>
           <span className="text-[12px] text-on-surface-variant mt-0.5">Member since Jan 2024 • Ludhiana Hub</span>
         </div>
@@ -113,7 +111,7 @@ export default function ProfilePage() {
             <span className="material-symbols-outlined text-primary text-[18px]">verified_user</span>
             <h2 className="text-[16px] font-semibold text-on-surface">Active EPR Digital Pass</h2>
           </div>
-          <span className="bg-primary-container px-2 py-0.5 rounded-full text-[10px] font-bold text-on-primary-container tracking-wider">CPCB AUDITED</span>
+
         </div>
 
         <div className="bg-gradient-to-br from-surface-container-high to-surface-container p-4 rounded-2xl shadow-lg border border-outline-variant/30 relative overflow-hidden">
@@ -136,10 +134,7 @@ export default function ProfilePage() {
             <div className="flex flex-col min-w-0">
               <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">SERIAL PASS HASH</span>
               <span className="text-[16px] font-mono font-bold text-on-surface tracking-tight truncate">#EPR-2025-LDH-0941</span>
-              <div className="flex items-center gap-1 mt-1.5 bg-primary/10 px-2 py-0.5 rounded w-fit">
-                <span className="material-symbols-outlined text-primary text-[12px]">lock</span>
-                <span className="text-[10px] font-semibold text-primary">SHA-256 Ledger Locked</span>
-              </div>
+
             </div>
           </div>
 
@@ -196,8 +191,6 @@ export default function ProfilePage() {
               <div className="h-px w-full bg-outline-variant/20 my-2.5" />
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1">
-                  <span className="material-symbols-outlined text-primary text-[14px]">verified</span>
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider">EPR Verified</span>
                 </div>
                 <button className="text-[12px] font-medium text-on-surface-variant hover:text-on-surface flex items-center gap-1 transition-colors">
                   <span className="material-symbols-outlined text-[14px]">download</span>
