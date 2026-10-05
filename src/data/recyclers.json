@@ -1,0 +1,247 @@
+[
+  {
+    "id": "rec-attero-01",
+    "name": "Attero Recycling Hub",
+    "cpcb_authorization": "CPCB/HW/E-Waste/PB/2023-2024",
+    "address": "Plot 42, Focal Point Phase IV, Industrial Area",
+    "city": "Ludhiana",
+    "state": "Punjab",
+    "pincode": "141001",
+    "lat": 30.9010,
+    "lng": 75.8573,
+    "distance_km": 3.2,
+    "phone": "+91 161 501 8844",
+    "rating": 4.9,
+    "tons_recycled": 840,
+    "certifications": [
+      "Hydrometallurgy Certified",
+      "ISO 14001",
+      "CPCB Authorized Recycler",
+      "R2 Certified"
+    ],
+    "accepted_types": [
+      "Li-ion",
+      "PCBs",
+      "CRT",
+      "Telecom Hardware"
+    ],
+    "facility_hours": "09:00 AM - 07:00 PM (Mon-Sat)",
+    "doorstep_pickup": true,
+    "cpcb_grade": "A+",
+    "processing_capacity": "1,200 MT/annum",
+    "wait_time": "15-20 mins"
+  },
+  {
+    "id": "rec-greentek-02",
+    "name": "GreenTek Reclaimers Pvt Ltd",
+    "cpcb_authorization": "CPCB/HW/E-Waste/PB/2022-2023",
+    "address": "Shed 12B, Industrial Area A, Near Cheema Chowk",
+    "city": "Ludhiana",
+    "state": "Punjab",
+    "pincode": "141002",
+    "lat": 30.9150,
+    "lng": 75.8720,
+    "distance_km": 5.1,
+    "phone": "+91 161 508 2219",
+    "rating": 4.7,
+    "tons_recycled": 620,
+    "certifications": [
+      "CPCB Authorized Dismantler",
+      "ISO 9001",
+      "ISO 14001"
+    ],
+    "accepted_types": [
+      "Laptops",
+      "Phones",
+      "Batteries",
+      "Tablets"
+    ],
+    "facility_hours": "09:30 AM - 06:30 PM (Mon-Sat)",
+    "doorstep_pickup": true,
+    "cpcb_grade": "A",
+    "processing_capacity": "850 MT/annum",
+    "wait_time": "20-30 mins"
+  },
+  {
+    "id": "rec-ecobin-03",
+    "name": "EcoBin Dismantler",
+    "cpcb_authorization": "CPCB/HW/E-Waste/PB/2021-2022",
+    "address": "Shop 18, Gill Road, Miller Ganj",
+    "city": "Ludhiana",
+    "state": "Punjab",
+    "pincode": "141003",
+    "lat": 30.8850,
+    "lng": 75.8400,
+    "distance_km": 2.1,
+    "phone": "+91 161 240 6512",
+    "rating": 4.3,
+    "tons_recycled": 350,
+    "certifications": [
+      "CPCB Authorized Collection Center",
+      "PPCB Compliant"
+    ],
+    "accepted_types": [
+      "Household electronics",
+      "Cables",
+      "Small Appliances"
+    ],
+    "facility_hours": "10:00 AM - 06:00 PM (Mon-Sat)",
+    "doorstep_pickup": false,
+    "cpcb_grade": "B+",
+    "processing_capacity": "450 MT/annum",
+    "wait_time": "10-15 mins"
+  },
+  {
+    "id": "rec-greenex-04",
+    "name": "Greenex Eco Solutions",
+    "cpcb_authorization": "CPCB/HW/E-Waste/PB/2023-2024",
+    "address": "Gate 3, Focal Point Phase VII, Dhandari Kalan",
+    "city": "Ludhiana",
+    "state": "Punjab",
+    "pincode": "141001",
+    "lat": 30.9200,
+    "lng": 75.8900,
+    "distance_km": 4.8,
+    "phone": "+91 161 462 7700",
+    "rating": 4.5,
+    "tons_recycled": 480,
+    "certifications": [
+      "CPCB Grade A Facility",
+      "ISO 14001",
+      "OHSAS 18001"
+    ],
+    "accepted_types": [
+      "Industrial equipment",
+      "Servers",
+      "Network Switches"
+    ],
+    "facility_hours": "09:00 AM - 06:00 PM (Mon-Fri)",
+    "doorstep_pickup": true,
+    "cpcb_grade": "A",
+    "processing_capacity": "700 MT/annum",
+    "wait_time": "25-35 mins"
+  },
+  {
+    "id": "rec-punjab-05",
+    "name": "Punjab E-Waste Management",
+    "cpcb_authorization": "CPCB/HW/E-Waste/PB/2020-2021",
+    "address": "Campus Road, Near South City Bypass, Ayali Kalan",
+    "city": "Ludhiana",
+    "state": "Punjab",
+    "pincode": "141008",
+    "lat": 30.8700,
+    "lng": 75.8200,
+    "distance_km": 8.2,
+    "phone": "+91 161 281 9901",
+    "rating": 4.8,
+    "tons_recycled": 920,
+    "certifications": [
+      "CPCB Grade A+ Mega Facility",
+      "ISO 14001",
+      "R2v3 Certified"
+    ],
+    "accepted_types": [
+      "All categories",
+      "Consumer Electronics",
+      "IT & Telecom",
+      "Medical Devices"
+    ],
+    "facility_hours": "08:30 AM - 07:30 PM (Mon-Sun)",
+    "doorstep_pickup": true,
+    "cpcb_grade": "A+",
+    "processing_capacity": "1,500 MT/annum",
+    "wait_time": "10-20 mins"
+  },
+  {
+    "id": "rec-ludhiana-06",
+    "name": "Ludhiana Green Recyclers",
+    "cpcb_authorization": "CPCB/HW/E-Waste/PB/2022-2023",
+    "address": "24 GT Road, Near Jalandhar Bypass Chowk",
+    "city": "Ludhiana",
+    "state": "Punjab",
+    "pincode": "141006",
+    "lat": 30.9300,
+    "lng": 75.8100,
+    "distance_km": 6.5,
+    "phone": "+91 161 274 3311",
+    "rating": 4.1,
+    "tons_recycled": 280,
+    "certifications": [
+      "CPCB Authorized Dismantler",
+      "PPCB Registered"
+    ],
+    "accepted_types": [
+      "Batteries",
+      "Chargers",
+      "Peripherals"
+    ],
+    "facility_hours": "10:00 AM - 05:30 PM (Mon-Sat)",
+    "doorstep_pickup": false,
+    "cpcb_grade": "B",
+    "processing_capacity": "350 MT/annum",
+    "wait_time": "15-20 mins"
+  },
+  {
+    "id": "rec-safecircuit-07",
+    "name": "SafeCircuit Dismantlers",
+    "cpcb_authorization": "CPCB/HW/E-Waste/PB/2023-2024",
+    "address": "Lane 5, Phase V, Focal Point",
+    "city": "Ludhiana",
+    "state": "Punjab",
+    "pincode": "141001",
+    "lat": 30.9050,
+    "lng": 75.8650,
+    "distance_km": 3.8,
+    "phone": "+91 161 503 1188",
+    "rating": 4.6,
+    "tons_recycled": 510,
+    "certifications": [
+      "CPCB Grade A",
+      "ISO 14001",
+      "RoHS Verification Partner"
+    ],
+    "accepted_types": [
+      "PCBs",
+      "Capacitors",
+      "Displays",
+      "Component Assemblies"
+    ],
+    "facility_hours": "09:00 AM - 06:30 PM (Mon-Sat)",
+    "doorstep_pickup": true,
+    "cpcb_grade": "A",
+    "processing_capacity": "800 MT/annum",
+    "wait_time": "20-25 mins"
+  },
+  {
+    "id": "rec-metalreborn-08",
+    "name": "MetalReborn Pvt Ltd",
+    "cpcb_authorization": "CPCB/HW/E-Waste/PB/2019-2020",
+    "address": "Heavy Industrial Estate, Rahon Road",
+    "city": "Ludhiana",
+    "state": "Punjab",
+    "pincode": "141010",
+    "lat": 30.8900,
+    "lng": 75.8300,
+    "distance_km": 9.5,
+    "phone": "+91 161 662 9000",
+    "rating": 4.9,
+    "tons_recycled": 1100,
+    "certifications": [
+      "CPCB Grade A+ Smelter Facility",
+      "ISO 14001",
+      "ISO 45001",
+      "R2v3 Certified"
+    ],
+    "accepted_types": [
+      "Heavy machinery",
+      "Transformers",
+      "Mainframes",
+      "Telecom Towers"
+    ],
+    "facility_hours": "08:00 AM - 08:00 PM (Mon-Sat)",
+    "doorstep_pickup": false,
+    "cpcb_grade": "A+",
+    "processing_capacity": "2,000 MT/annum",
+    "wait_time": "30-45 mins"
+  }
+]
