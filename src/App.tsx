@@ -15,10 +15,10 @@ function AppContent() {
 
   const path = window.location.pathname;
   if (path.startsWith('/pass/')) {
-    const passId = path.split('/')[2];
+    const encodedData = path.split('/')[2];
     return (
       <div className="dark min-h-screen bg-surface text-on-surface font-['Plus_Jakarta_Sans'] antialiased pt-8">
-        <PublicPassPage passId={passId} />
+        <PublicPassPage encodedData={encodedData} />
       </div>
     );
   }

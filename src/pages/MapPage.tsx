@@ -29,15 +29,44 @@ const userIcon = L.divIcon({
   iconAnchor: [8, 8],
 });
 
-const generateDummyRecyclers = (baseLat: number, baseLng: number): Recycler[] => {
+const generateDummyRecyclers = async (baseLat: number, baseLng: number): Promise<Recycler[]> => {
   const names = ["Eco-Dismantle Hub", "GreenTech Recoveries", "Urban Mine Corp", "Apex E-Waste Solutions", "Sustainable Circuits Ltd", "Re-Volt Battery Disposal", "TechScrap", "ZeroWaste E-Recycling"];
   
+  let realLocations: {lat: number, lng: number}[] = [];
+  
+  try {
+    // Fetch actual real-world industrial or commercial zones near the user's location (within 15km)
+    const query = `[out:json][timeout:5];(way["landuse"="industrial"](around:15000,${baseLat},${baseLng});way["landuse"="commercial"](around:15000,${baseLat},${baseLng}););out center 8;`;
+    const res = await fetch(`https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`);
+    const data = await res.json();
+    if (data && data.elements && data.elements.length > 0) {
+      realLocations = data.elements.map((el: any) => ({
+        lat: el.center?.lat || el.lat,
+        lng: el.center?.lon || el.lon
+      })).filter((loc: any) => loc.lat && loc.lng);
+    }
+  } catch (err) {
+    console.warn("Overpass API failed, falling back to smart local layout", err);
+  }
+
   return names.map((name, i) => {
-    const latOffset = (Math.random() - 0.5) * 0.15;
-    const lngOffset = (Math.random() - 0.5) * 0.15;
-    const lat = baseLat + latOffset;
-    const lng = baseLng + lngOffset;
-    const distance_km = parseFloat((Math.sqrt(latOffset*latOffset + lngOffset*lngOffset) * 111).toFixed(1));
+    let lat, lng;
+    
+    if (realLocations[i]) {
+      // Pin to actual industrial land (guaranteed NOT in a river/ocean)
+      lat = realLocations[i].lat;
+      lng = realLocations[i].lng;
+    } else {
+      // Smart math fallback: Keep radius very tight (max ~3-4km) to heavily reduce chances of landing in a river
+      const radius = 0.035 * Math.sqrt(Math.random()); 
+      const theta = Math.random() * 2 * Math.PI;
+      lat = baseLat + (radius * Math.cos(theta));
+      lng = baseLng + (radius * Math.sin(theta));
+    }
+
+    const latDiff = lat - baseLat;
+    const lngDiff = lng - baseLng;
+    const distance_km = parseFloat((Math.sqrt(latDiff*latDiff + lngDiff*lngDiff) * 111).toFixed(1));
     
     return {
       id: `rec-${i}`,
@@ -74,27 +103,27 @@ export default function MapPage() {
   const [pickupBooked, setPickupBooked] = useState(false);
 
   useEffect(() => {
+    const initMap = async (lat: number, lng: number) => {
+      const localRecyclers = await generateDummyRecyclers(lat, lng);
+      setRecyclers(localRecyclers);
+      setSelectedRecycler(localRecyclers[0]);
+    };
+
     // Try to get actual user location, fallback to Ludhiana
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const loc: [number, number] = [pos.coords.latitude, pos.coords.longitude];
           setUserLocation(loc);
-          const localRecyclers = generateDummyRecyclers(loc[0], loc[1]);
-          setRecyclers(localRecyclers);
-          setSelectedRecycler(localRecyclers[0]);
+          initMap(loc[0], loc[1]);
         },
         (err) => {
           console.warn('Geolocation blocked/failed, using default.', err);
-          const localRecyclers = generateDummyRecyclers(userLocation[0], userLocation[1]);
-          setRecyclers(localRecyclers);
-          setSelectedRecycler(localRecyclers[0]);
+          initMap(userLocation[0], userLocation[1]);
         }
       );
     } else {
-      const localRecyclers = generateDummyRecyclers(userLocation[0], userLocation[1]);
-      setRecyclers(localRecyclers);
-      setSelectedRecycler(localRecyclers[0]);
+      initMap(userLocation[0], userLocation[1]);
     }
   }, []);
 

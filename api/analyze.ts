@@ -36,10 +36,13 @@ Your response must strictly match this schema:
   "disposal_advisory": "string - formal advisory about safe disposal",
   "heavy_metal_percentage": number,
   "bfr_percentage": number,
-  "solvent_percentage": number
+  "solvent_percentage": number,
+  "is_consumer_item": "boolean - true if the item is a complete sold consumer product (e.g. whole laptop, phone), false if component/scrap",
+  "brand_model": "string - specific brand and model if identifiable, otherwise null",
+  "estimated_resale_value_inr": "number - estimated secondhand resale value in INR if it's an identifiable consumer item, otherwise null"
 }
 
-Always include at least Lead, Mercury, Cadmium, and BFRs when applicable.`;
+Always include at least Lead, Mercury, Cadmium, and BFRs when applicable. If it is a whole consumer device with a recognized brand/model, provide a realistic estimated resale value.`;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Setup CORS if needed for local testing outside Vercel Dev

@@ -33,6 +33,9 @@ export interface AnalysisResult {
   heavy_metal_percentage: number;
   bfr_percentage: number;
   solvent_percentage: number;
+  is_consumer_item?: boolean;
+  brand_model?: string;
+  estimated_resale_value_inr?: number;
 }
 
 export interface Recycler {

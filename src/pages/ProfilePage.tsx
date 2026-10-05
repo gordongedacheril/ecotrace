@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useApp } from '../context/AppContext';
 
@@ -8,7 +8,19 @@ export default function ProfilePage() {
   
   // Calculate unique pass ID once
   const [passId] = useState("EPR-2026-LDH-" + Math.floor(1000 + Math.random() * 9000));
-  const profileUrl = window.location.origin + "/pass/" + passId;
+  
+  const profileUrl = useMemo(() => {
+    const latestHandover = handovers[0];
+    const payload = {
+      id: passId,
+      device: latestHandover?.device_name || "Assorted E-Waste",
+      recycler: latestHandover?.recycler || "Authorized CPCB Recycler",
+      date: latestHandover?.date || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      weight: latestHandover?.weight_kg || "N/A"
+    };
+    const encodedData = btoa(encodeURIComponent(JSON.stringify(payload)));
+    return window.location.origin + "/pass/" + encodedData;
+  }, [handovers, passId]);
 
   return (
     <div className="flex flex-col w-full px-4 pb-8">
@@ -68,7 +80,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="bg-surface-container p-3 rounded-xl flex flex-col justify-between shadow-sm relative overflow-hidden">
-          <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-primary/10 rounded-full blur-xl pointer-events-none" />
+
           <div className="flex items-center justify-between mb-2 z-10">
             <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Civic Rank</span>
             <span className="material-symbols-outlined text-primary text-[14px]">shield</span>
@@ -91,7 +103,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="bg-gradient-to-br from-surface-container-high to-surface-container p-4 rounded-2xl shadow-lg border border-outline-variant/30 relative overflow-hidden">
-          <div className="absolute -right-12 -top-12 w-32 h-32 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
+
           
           <div className="flex justify-between items-start mb-4">
             <div className="flex flex-col">

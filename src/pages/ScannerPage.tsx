@@ -88,7 +88,7 @@ const ScannerPage = () => {
       {/* Context Bar */}
       <div className="px-4 pt-2 pb-1 flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          <span className="w-2 h-2 rounded-full bg-primary animate-ping shrink-0" />
+          <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
           <span className="text-[12px] font-semibold text-primary truncate">Hello, Circular Guardian 🌿</span>
         </div>
 
@@ -147,16 +147,16 @@ const ScannerPage = () => {
             {/* Overlays (only show when camera is active and no preview/error) */}
             {!previewImage && isCameraActive && !cameraError && (
               <>
-                <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-primary rounded-tl-sm pointer-events-none drop-shadow-[0_0_8px_rgba(78,222,163,0.6)]" />
-                <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-primary rounded-tr-sm pointer-events-none drop-shadow-[0_0_8px_rgba(78,222,163,0.6)]" />
-                <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-primary rounded-bl-sm pointer-events-none drop-shadow-[0_0_8px_rgba(78,222,163,0.6)]" />
-                <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-primary rounded-br-sm pointer-events-none drop-shadow-[0_0_8px_rgba(78,222,163,0.6)]" />
+                <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-primary/70 rounded-tl-sm pointer-events-none" />
+                <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-primary/70 rounded-tr-sm pointer-events-none" />
+                <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-primary/70 rounded-bl-sm pointer-events-none" />
+                <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-primary/70 rounded-br-sm pointer-events-none" />
                 
-                <div className="absolute left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_12px_rgba(78,222,163,0.9)] animate-scan-sweep pointer-events-none" />
+                <div className="absolute left-4 right-4 h-[1px] bg-primary/80 animate-scan-sweep pointer-events-none" />
                 
-                <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-on-surface-variant text-[10px] font-bold pointer-events-none">
-                  <span className="bg-surface-container-lowest/80 px-2 py-0.5 rounded">Live Analysis</span>
-                  <span className="bg-surface-container-lowest/80 px-2 py-0.5 rounded text-primary font-mono">Gemini-Flash</span>
+                <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-on-surface-variant text-[10px] font-medium pointer-events-none">
+                  <span className="bg-surface-container-lowest/80 px-2 py-0.5 rounded border border-outline-variant/30">Live Analysis</span>
+                  <span className="bg-surface-container-lowest/80 px-2 py-0.5 rounded text-primary font-mono border border-outline-variant/30">Gemini-Flash</span>
                 </div>
               </>
             )}
@@ -166,9 +166,9 @@ const ScannerPage = () => {
           <div className="w-full mt-4 flex items-center gap-2 z-10">
             <button
               onClick={handleCapture}
-              className="flex-1 h-12 rounded-xl bg-primary hover:bg-primary-container text-on-primary-fixed font-semibold text-[16px] flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(16,185,129,0.30)] active:scale-[0.98] transition-all"
+              className="flex-1 h-12 rounded-xl bg-primary hover:bg-primary-container text-on-primary-fixed font-semibold text-[15px] flex items-center justify-center gap-2 shadow-sm active:scale-[0.98] transition-all"
             >
-              <span className="material-symbols-outlined text-[20px]">photo_camera</span>
+              <span className="material-symbols-outlined text-[18px]">photo_camera</span>
               <span>Scan Item</span>
             </button>
             <button
