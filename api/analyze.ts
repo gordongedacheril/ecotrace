@@ -78,9 +78,49 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ error: 'Configuration Error', details: 'GEMINI_API_KEY is not configured in Vercel Environment Variables' });
     }
 
+    // Dynamically fetch available models for this specific API key to avoid 404s
+    const modelsReq = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const modelsData = await modelsReq.json();
+    
+    if (!modelsReq.ok) {
+      throw new Error(`Failed to fetch models: ${modelsData.error?.message || 'Unknown error'}`);
+    }
+
+    const availableModels = modelsData.models
+      .filter((m: any) => m.supportedGenerationMethods?.includes("generateContent"))
+      .map((m: any) => m.name.replace('models/', ''));
+
+    // Priority list of vision-capable models
+    const preferredModels = [
+      'gemini-1.5-flash', 
+      'gemini-1.5-flash-latest', 
+      'gemini-1.5-pro', 
+      'gemini-1.5-pro-latest', 
+      'gemini-pro-vision', 
+      'gemini-1.0-pro-vision-latest'
+    ];
+    
+    let selectedModel = '';
+    for (const pm of preferredModels) {
+      if (availableModels.includes(pm)) {
+        selectedModel = pm;
+        break;
+      }
+    }
+
+    if (!selectedModel) {
+      throw new Error("No compatible vision models found for this API key. Available models: " + availableModels.join(', '));
+    }
+
+    const isLegacyVision = selectedModel.includes('pro-vision');
     const genAI = new GoogleGenerativeAI(apiKey);
-    // Use the -latest suffix which prevents 404s on certain API keys/regions
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest', systemInstruction: SYSTEM_PROMPT });
+    
+    const modelOptions: any = { model: selectedModel };
+    // Legacy models don't support systemInstruction
+    if (!isLegacyVision) {
+      modelOptions.systemInstruction = SYSTEM_PROMPT;
+    }
+    const model = genAI.getGenerativeModel(modelOptions);
     
     let parts: any[] = [];
     
@@ -97,20 +137,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         base64Data = image.replace(/^data:image\/\w+;base64,/, '');
       }
       
+      const promptText = isLegacyVision 
+        ? `${SYSTEM_PROMPT}\n\nAnalyze this e-waste item image and identify exactly what it is. Follow the JSON schema strictly.`
+        : 'Analyze this e-waste item image and identify exactly what it is. Follow the JSON schema strictly.';
+
       parts.push({ inlineData: { data: base64Data, mimeType } });
-      parts.push({ text: 'Analyze this e-waste item image and identify exactly what it is. Follow the JSON schema strictly.' });
+      parts.push({ text: promptText });
     } else if (text) {
-      parts.push({ text: `Analyze this e-waste item: "${text}". Follow the JSON schema strictly.` });
+      const promptText = isLegacyVision 
+        ? `${SYSTEM_PROMPT}\n\nAnalyze this e-waste item: "${text}". Follow the JSON schema strictly.`
+        : `Analyze this e-waste item: "${text}". Follow the JSON schema strictly.`;
+      parts.push({ text: promptText });
     } else {
       return res.status(400).json({ error: 'Bad Request', details: 'No image or text provided' });
     }
 
+    const generationConfig: any = { temperature: 0.2 };
+    // Legacy models don't support responseMimeType
+    if (!isLegacyVision) {
+      generationConfig.responseMimeType = 'application/json';
+    }
+
     const result = await model.generateContent({
       contents: [{ role: 'user', parts }],
-      generationConfig: {
-        temperature: 0.2,
-        responseMimeType: 'application/json'
-      }
+      generationConfig
     });
 
     let responseText = result.response.text();
